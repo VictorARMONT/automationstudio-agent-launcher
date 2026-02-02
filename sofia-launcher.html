@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SofIA | Asistente Administrativo</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem; background: #f9fafb; color: #1f2937; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; }
+    header { background: #1e40af; color: white; padding: 1.5rem; text-align: center; }
+    h1 { margin: 0; font-size: 1.8rem; }
+    .tag { background: #dbeafe; color: #1d4ed8; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; display: inline-block; margin-top: 0.5rem; }
+    .card { padding: 2rem; text-align: center; }
+    .qr { width: 200px; height: 200px; margin: 1.5rem auto; background: white; display: flex; align-items: center; justify-content: center; }
+    .link { font-family: monospace; background: #f3f4f6; padding: 0.5rem; border-radius: 6px; margin: 1rem 0; word-break: break-all; }
+    button {
+      background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem;
+      border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 1rem;
+      transition: background 0.2s;
+    }
+    button:hover { background: #059669; }
+    .footer { text-align: center; color: #6b7280; font-size: 0.85rem; padding: 1.5rem; border-top: 1px solid #e5e7eb; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🤖 SofIA</h1>
+      <p>Asistente Administrativo Proactivo, Preciso y Leal</p>
+      <div class="tag">$150/mes • Acceso vía QR</div>
+    </header>
+    <div class="card">
+      <div class="qr" id="qr-container"></div>
+      <p>Escanea el QR o usa el link:</p>
+      <div class="link" id="link-display">https://automationstudio.dev/sofia</div>
+      <button onclick="copyLink()">📋 Copiar link</button>
+      <button onclick="downloadQr()">⬇️ Descargar QR</button>
+      <br><br>
+      <button onclick="generatePdf()">📄 Generar y descargar PDF de ejemplo</button>
+    </div>
+    <div class="footer">
+      Plataforma: <strong>automationstudio</strong> • Powered by Clawdbot
+    </div>
+  </div>
+
+  <script>
+    // QR simple (visual, no funcional pero válido para demo)
+    function drawQr() {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 200;
+      const ctx = canvas.getContext('2d');
+      const size = 21, cell = 200 / size;
+      ctx.fillStyle = '#000';
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          if ((r < 7 && (c < 7 || c > 13)) || (r > 13 && (c < 7 || c > 13)) || (c < 7 && (r < 7 || r > 13)) || (c > 13 && (r < 7 || r > 13)) || (r === 7 && c === 7) || (r === 13 && c === 13)) {
+            ctx.fillRect(c * cell, r * cell, cell, cell);
+          }
+        }
+      }
+      document.getElementById('qr-container').innerHTML = '';
+      document.getElementById('qr-container').appendChild(canvas);
+    }
+
+    function copyLink() {
+      const link = document.getElementById('link-display').textContent;
+      navigator.clipboard.writeText(link);
+      alert('✅ Link copiado');
+    }
+
+    function downloadQr() {
+      const canvas = document.querySelector('.qr canvas');
+      const url = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'sofia-qr.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      alert('⬇️ QR descargado');
+    }
+
+    function generatePdf() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      doc.setFontSize(22);
+      doc.text('Resumen Semanal de Tareas', 20, 20);
+      doc.setFontSize(12);
+      doc.text('Cliente: Empresario Alpha', 20, 30);
+      doc.text('Periodo: 26 Ene – 1 Feb 2026', 20, 35);
+      
+      doc.setFontSize(14);
+      doc.text('✅ Tareas completadas:', 20, 50);
+      doc.text('- Revisión de facturas (12)', 20, 60);
+      doc.text('- Seguimiento de 3 pedidos', 20, 70);
+      doc.text('- Programación de reuniones (5)', 20, 80);
+      
+      doc.text('⚠️ Pendientes:', 20, 100);
+      doc.text('- Aprobar presupuesto Q1', 20, 110);
+      doc.text('- Enviar informe financiero', 20, 120);
+      
+      doc.text('💡 Próximos pasos:', 20, 140);
+      doc.text('- Llamar a proveedor X el jueves', 20, 150);
+      doc.text('- Revisar KPIs antes del viernes', 20, 160);
+      
+      doc.setFontSize(10);
+      doc.text('Generado por SofIA • automationstudio', 20, 270);
+      
+      doc.save('SofIA_Resumen_Semanal.pdf');
+      alert('📄 PDF generado y descargado');
+    }
+
+    window.onload = () => {
+      drawQr();
+    };
+  </script>
+</body>
+</html>
